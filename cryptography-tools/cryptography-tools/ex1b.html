@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cryptography Tools</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: "Arial", Tahoma, sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #157a4b, #032214);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 420px;
+    padding: 30px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    //border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    color: rgb(19, 20, 19);
+}
+
+h2, p {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+  //  border-radius: 10px;
+    border: none;
+    font-size: 17px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(135deg, #fddb92, #d1fdff);
+    margin-top: 10px;
+}
+
+pre {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 12px;
+    font-size: 14px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- Primitive Root Checker -->
+    <div class="card">
+        <h2>Primitive Root</h2>
+        <p>Check Primitive Root mod n</p>
+
+        <input type="number" id="n" placeholder="Enter n">
+        <input type="number" id="a" placeholder="Enter a">
+
+        <button onclick="checkPrimitiveRoot()">Check</button>
+        <button onclick="countPrimitiveRoots()">Check total no. of Primitive Roots</button>
+
+
+        <pre id="output1"></pre>
+    </div>
+
+    <!-- Euclidean Algorithm -->
+    <div class="card">
+        <h2>Euclidean Algorithm</h2>
+        <p>GCD using gcd(a, b) = gcd(b, a mod b)</p>
+
+        <input type="number" id="num1" placeholder="Enter first number">
+        <input type="number" id="num2" placeholder="Enter second number">
+
+        <button onclick="findGCD()">Find GCD</button>
+
+        <pre id="output2"></pre>
+    </div>
+
+</div>
+
+<script>
+function eulerTotient(n) {
+    let result = n;
+    for (let i = 2; i * i <= n; i++) {
+        if (n % i === 0) {
+            while (n % i === 0) n /= i;
+            result -= result / i;
+        }
+    }
+    if (n > 1) result -= result / n;
+    return Math.floor(result);
+}
+
+function modPower(base, exp, mod) {
+    let result = 1;
+    base %= mod;
+    while (exp > 0) {
+        if (exp % 2 === 1) result = (result * base) % mod;
+        exp = Math.floor(exp / 2);
+        base = (base * base) % mod;
+    }
+    return result;
+}
+
+function checkPrimitiveRoot() {
+    let n = parseInt(document.getElementById("n").value);
+    let a = parseInt(document.getElementById("a").value);
+    let output = document.getElementById("output1");
+    output.textContent = "";
+
+    if (isNaN(n) || isNaN(a) || n <= 1 || a <= 0) {
+        output.textContent = "Enter valid values for n and a.";
+        return;
+    }
+
+    let phi = eulerTotient(n);
+    let residues = new Set();
+
+    output.textContent += `Checking if ${a} is a primitive root of ${n}\n\n`;
+
+    for (let i = 1; i <= phi; i++) {
+        let val = modPower(a, i, n);
+        residues.add(val);
+        output.textContent += `${a}^${i} mod ${n} = ${val}\n`;
+    }
+
+    if (residues.size === phi && residues.has(1)) {
+        output.textContent += `\nAll remainders are distinct\n`;
+        output.textContent += `${a} is a primitive root of ${n}`;
+    } else {
+        output.textContent += `\nRemainders repeat\n`;
+        output.textContent += `${a} is NOT a primitive root of ${n}`;
+    }
+}
+
+function findGCD() {
+    let num1 = parseInt(document.getElementById("num1").value);
+    let num2 = parseInt(document.getElementById("num2").value);
+    let output = document.getElementById("output2");
+
+    output.textContent = "";
+
+    if (isNaN(num1) || isNaN(num2) || num1 <= 0 || num2 <= 0) {
+        output.textContent = "Please enter two positive integers.";
+        return;
+    }
+
+    output.textContent += "Using Formula:\n";
+    output.textContent += "gcd(a, b) = gcd(b, a mod b)\n\n";
+
+    while (num2 !== 0) {
+        let r = num1 % num2;
+        output.textContent += `gcd(${num1}, ${num2}) = gcd(${num2}, ${r})\n\n`;
+        num1 = num2;
+        num2 = r;
+    }
+
+    output.textContent += `GCD = ${num1}`;
+}
+
+function primeFactors(num) {
+    let factors = [];
+    let n = num;
+
+    for (let i = 2; i * i <= n; i++) {
+        if (n % i === 0) {
+            factors.push(i);
+            while (n % i === 0) n /= i;
+        }
+    }
+    if (n > 1) factors.push(n);
+    return factors;
+}
+
+function countPrimitiveRoots() {
+    let n = parseInt(document.getElementById("n").value);
+    let output = document.getElementById("output1");
+
+    if (isNaN(n) || n <= 1) {
+        output.textContent = "Enter a valid value of n.";
+        return;
+    }
+
+    output.textContent = "";
+    output.textContent += `Finding number of primitive roots mod ${n}\n\n`;
+
+    // Step 1: φ(n)
+    let phi_n = eulerTotient(n);
+    output.textContent += `φ(${n}) = ${phi_n}\n\n`;
+
+    // Step 2: φ(φ(n))
+    output.textContent += `φ(φ(${n})) = φ(${phi_n})\n\n`;
+
+    // Step 3: Prime factorization
+    let factors = primeFactors(phi_n);
+    output.textContent += `${phi_n} = `;
+    output.textContent += factors.join(" × ");
+    output.textContent += `\n\n`;
+
+    // Step 4: Apply Euler Totient Formula
+    let result = phi_n;
+    output.textContent += `φ(${phi_n}) = ${phi_n}`;
+
+    factors.forEach(p => {
+        output.textContent += ` (1 − 1/${p})`;
+        result = result * (1 - 1 / p);
+    });
+
+    output.textContent += `\n\n`;
+
+    // Step 5: Final result
+    output.textContent += `= ${Math.round(result)}\n\n`;
+    output.textContent += `No. of primitive roots = ${Math.round(result)}`;
+}
+</script>
+
+</body>
+</html>
