@@ -1,0 +1,45 @@
+body{
+font-family: Arial;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+margin:0;
+color:white;
+text-align:center;
+}
+
+.container{
+width:800px;
+margin:40px auto;
+background:#1b2836;
+padding:30px;
+border-radius:12px;
+}
+
+input{
+width:260px;
+padding:10px;
+margin:8px;
+border-radius:6px;
+border:none;
+}
+
+button{
+background:#0072ff;
+border:none;
+padding:10px 20px;
+margin:8px;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+textarea{
+width:100%;
+height:300px;
+margin-top:20px;
+background:black;
+color:#00ff9c;
+font-family:monospace;
+padding:12px;
+border-radius:6px;
+border:none;
+}

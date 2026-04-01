@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>S-DES Tool</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>S-DES Encryption / Decryption</h1>
+
+<input id="pt" placeholder="8-bit plaintext"><br>
+<input id="key" placeholder="10-bit key"><br>
+<input id="rounds" placeholder="Rounds"><br>
+
+<button onclick="encrypt()">Encrypt</button>
+<button onclick="decrypt()">Decrypt</button>
+
+<textarea id="out"></textarea>
+
+</div>
+
+<script>
+
+async function encrypt(){
+
+let plaintext=document.getElementById("pt").value
+let key=document.getElementById("key").value
+let rounds=document.getElementById("rounds").value
+
+let r=await fetch("/sdesEncrypt",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({plaintext,key,rounds})
+
+})
+
+document.getElementById("out").value=await r.text()
+
+}
+
+async function decrypt(){
+
+let plaintext=document.getElementById("pt").value
+let key=document.getElementById("key").value
+let rounds=document.getElementById("rounds").value
+
+let r=await fetch("/sdesDecrypt",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({plaintext,key,rounds})
+
+})
+
+document.getElementById("out").value=await r.text()
+
+}
+
+</script>
+
+</body>
+</html>

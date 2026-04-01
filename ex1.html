@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Substitution Cipher</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .box {
+            width: 460px;
+            padding: 25px 30px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        h4 {
+            margin-top: 18px;
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        input[type="radio"] {
+            accent-color: #00d4ff;
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        textarea, input[type="number"] {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        textarea::placeholder,
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        textarea:focus, input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        }
+
+        button {
+            width: 48%;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:first-of-type {
+            background: linear-gradient(135deg, #00d4ff, #007cf0);
+            color: white;
+        }
+
+        button:last-of-type {
+            background: linear-gradient(135deg, #ff7e5f, #ff3f34);
+            color: white;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        #keyBox {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Substitution Cipher</h2>
+
+    <input type="radio" name="cipher" value="caesar" checked onclick="toggleKey()"> Shift (Caesar) Cipher<br>
+    <input type="radio" name="cipher" value="mono" onclick="toggleKey()"> Monoalphabetic Cipher<br>
+    <input type="radio" name="cipher" value="vigenere" onclick="toggleKey()"> Vigenère Cipher<br>
+
+    <!-- Shift Key -->
+    <div id="keyBox">
+        <label>Enter Shift Key:</label>
+        <input type="number" id="key" value="3">
+    </div>
+
+    <h4>Plain Text</h4>
+    <textarea id="plain"></textarea>
+
+    <h4>Cipher Text</h4>
+    <textarea id="cipher"></textarea>
+
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button>
+</div>
+
+<script>
+var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var monoKey = "QWERTYUIOPASDFGHJKLZXCVBNM";
+var vigKey = "KEY";
+
+/* Show key box only for Shift cipher */
+function toggleKey() {
+    var radios = document.getElementsByName("cipher");
+
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+            if (radios[i].value == "caesar") {
+                document.getElementById("keyBox").style.display = "block";
+            } else {
+                document.getElementById("keyBox").style.display = "none";
+            }
+        }
+    }
+}
+
+toggleKey();
+
+/* Get selected cipher */
+function getCipher() {
+    var radios = document.getElementsByName("cipher");
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+            return radios[i].value;
+        }
+    }
+}
+
+/* Encrypt */
+function encrypt() {
+    var text = document.getElementById("plain").value.toUpperCase();
+    var type = getCipher();
+    var result = "";
+
+    if (type == "caesar") {
+        var key = parseInt(document.getElementById("key").value) % 26;
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (alpha.indexOf(c) != -1) {
+                result += alpha[(alpha.indexOf(c) + key) % 26];
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    if (type == "mono") {
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (alpha.indexOf(c) != -1) {
+                result += monoKey[alpha.indexOf(c)];
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    if (type == "vigenere") {
+        var j = 0;
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (alpha.indexOf(c) != -1) {
+                var shift = alpha.indexOf(vigKey[j % vigKey.length]);
+                result += alpha[(alpha.indexOf(c) + shift) % 26];
+                j++;
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    document.getElementById("cipher").value = result;
+}
+
+/* Decrypt */
+function decrypt() {
+    var text = document.getElementById("cipher").value.toUpperCase();
+    var type = getCipher();
+    var result = "";
+
+    if (type == "caesar") {
+        var key = parseInt(document.getElementById("key").value) % 26;
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (alpha.indexOf(c) != -1) {
+                result += alpha[(alpha.indexOf(c) - key + 26) % 26];
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    if (type == "mono") {
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (monoKey.indexOf(c) != -1) {
+                result += alpha[monoKey.indexOf(c)];
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    if (type == "vigenere") {
+        var j = 0;
+        for (var i = 0; i < text.length; i++) {
+            var c = text[i];
+            if (alpha.indexOf(c) != -1) {
+                var shift = alpha.indexOf(vigKey[j % vigKey.length]);
+                result += alpha[(alpha.indexOf(c) - shift + 26) % 26];
+                j++;
+            } else {
+                result += c;
+            }
+        }
+    }
+
+    document.getElementById("plain").value = result;
+}
+</script>
+
+</body>
+</html>

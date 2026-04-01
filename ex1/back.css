@@ -1,0 +1,54 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    transition: background 0.8s ease;
+}
+
+/* Default */
+body.caesar-bg {
+    background: linear-gradient(135deg, #1d2671, #c33764);
+}
+
+/* Playfair – classical crypto */
+body.playfair-bg {
+    background: linear-gradient(135deg, #134e5e, #71b280);
+}
+
+/* Hill – high security / matrix */
+body.hill-bg {
+    background: linear-gradient(135deg, #000428, #004e92);
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 70%);
+    pointer-events: none;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: background 0.5s;
+}
+
+/* Caesar – low security */
+.caesar-bg {
+    background-color: #eef2ff;
+}
+
+/* Playfair – medium security */
+.playfair-bg {
+    background-color: #ecfdf5;
+}
+
+/* Hill – high security */
+.hill-bg {
+    background-color: #fff1f2;
+}

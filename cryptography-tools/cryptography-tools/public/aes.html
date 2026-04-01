@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AES Tool</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AES Encryption / Decryption</h1>
+
+<input id="aesKey" placeholder="Enter 32-hex key"><br>
+<input id="data" placeholder="Plaintext / Ciphertext"><br>
+<input id="aesRounds" placeholder="Rounds"><br>
+
+<button onclick="encryptAES()">Encrypt</button>
+<button onclick="decryptAES()">Decrypt</button>
+<button onclick="clearAES()">Clear</button>
+
+<textarea id="out"></textarea>
+
+</div>
+
+<script>
+
+async function encryptAES(){
+
+let key=document.getElementById("aesKey").value
+let data=document.getElementById("data").value
+let rounds=document.getElementById("aesRounds").value
+
+let r=await fetch("/aesEncrypt",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({key,data,rounds})
+
+})
+
+document.getElementById("out").value=await r.text()
+
+}
+
+async function decryptAES(){
+
+let key=document.getElementById("aesKey").value
+let data=document.getElementById("data").value
+let rounds=document.getElementById("aesRounds").value
+
+let r=await fetch("/aesDecrypt",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({key,data,rounds})
+
+})
+
+document.getElementById("out").value=await r.text()
+
+}
+
+function clearAES(){
+
+document.getElementById("aesKey").value=""
+document.getElementById("data").value=""
+document.getElementById("aesRounds").value=""
+document.getElementById("out").value=""
+
+}
+
+</script>
+
+</body>
+</html>

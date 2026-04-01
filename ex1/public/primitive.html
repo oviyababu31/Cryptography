@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Primitive Root</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e166ea, #4b8fa2);
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card {
+            background: #ffffff;
+            width: 560px;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        h2 { text-align: center; color: #333; }
+        input[type="number"] {
+            width: 100%; padding: 10px; margin-top: 12px;
+            border-radius: 8px; border: 1px solid #ccc; font-size: 16px;
+        }
+        .options {
+            margin-top: 15px; font-size: 15px;
+        }
+        .options label {
+            display: block; margin-bottom: 8px; cursor: pointer;
+        }
+        button {
+            width: 100%; margin-top: 15px; padding: 10px;
+            background: #20c997; color: white; font-size: 16px;
+            border: none; border-radius: 8px; cursor: pointer;
+        }
+        button:hover { background: #17a589; }
+        pre {
+            margin-top: 15px; background: #1e1e2f; color: #eaeaea;
+            padding: 15px; border-radius: 8px; max-height: 320px;
+            overflow-y: auto; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Primitive Root</h2>
+    <input type="number" id="p" placeholder="Enter a prime number (p)">
+    <input type="number" id="g" placeholder="Enter number (g)">
+    <div class="options">
+        <label>
+            <input type="radio" name="choice" value="check" checked onclick="toggleInput(true)">
+            Check whether g is a primitive root of p
+        </label>
+        <label>
+            <input type="radio" name="choice" value="find" onclick="toggleInput(false)">
+            Find the first primitive root of p
+        </label>
+    </div>
+    <button onclick="process()">Submit</button>
+    <pre id="output"></pre>
+</div>
+<script>
+function toggleInput(enable) {
+    const gInput = document.getElementById("g");
+    gInput.disabled = !enable;
+    gInput.style.display = enable ? "block" : "none";
+    if (!enable) gInput.value = "";
+}
+
+function powerMod(base, exp, mod) {
+    let result = 1;
+    for (let i = 1; i <= exp; i++) {
+        result = (result * base) % mod;
+    }
+    return result;
+}
+
+function isPrimitiveRootWithSteps(g, p) {
+    let phi = p - 1;
+    let values = new Set();
+    let steps = "";
+    for (let k = 1; k <= phi; k++) {
+        let val = powerMod(g, k, p);
+        values.add(val);
+        steps += `${g}^${k} mod ${p} = ${val}\n`;
+    }
+    return { isPrimitive: values.size === phi, steps: steps };
+}
+
+function process() {
+    const p = parseInt(document.getElementById("p").value);
+    const g = parseInt(document.getElementById("g").value);
+    const out = document.getElementById("output");
+    const choice = document.querySelector('input[name="choice"]:checked').value;
+
+    out.textContent = "";
+    if (isNaN(p) || p <= 1) {
+        out.textContent = "Please enter a valid prime number.";
+        return;
+    }
+    out.textContent += `φ(${p}) = ${p - 1}\n\n`;
+
+    if (choice === "check") {
+        if (isNaN(g)) {
+            out.textContent += "Please enter value of g.";
+            return;
+        }
+        out.textContent += `Checking g = ${g}\n\n`;
+        const result = isPrimitiveRootWithSteps(g, p);
+        out.textContent += result.steps;
+        out.textContent += result.isPrimitive ? `\n${g} IS a primitive root of ${p}` : `\n${g} is NOT a primitive root of ${p}`;
+    } else {
+        out.textContent += "Finding first primitive root...\n\n";
+        for (let candidate = 2; candidate < p; candidate++) {
+            out.textContent += `Trying g = ${candidate}\n`;
+            const result = isPrimitiveRootWithSteps(candidate, p);
+            out.textContent += result.steps;
+            if (result.isPrimitive) {
+                out.textContent += `\nFirst primitive root of ${p} is ${candidate}`;
+                return;
+            }
+            out.textContent += `${candidate} is not a primitive root\n\n`;
+        }
+        out.textContent += "No primitive root found.";
+    }
+}
+</script>
+</body>
+</html>
